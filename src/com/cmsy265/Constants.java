@@ -81,8 +81,8 @@ public interface Constants {
      *   * List of TV IDs (plaintext).
      *   * List of customers (plaintext).
      */
-    final String stackFIle  = "src/stack.txt";
-    final String custFile   = "src/CustFile.txt";
+    final String stackFIle  = "txt/stack.txt";
+    final String custFile   = "txt/CustFile.txt";
 
     /**
      * Constants for calculating cost.

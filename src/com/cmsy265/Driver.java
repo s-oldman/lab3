@@ -1,8 +1,11 @@
 package com.cmsy265;
 
 import java.io.BufferedReader;          // For reading files in chunks.
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;   // Required by FileReader.
 import java.io.FileReader;              // For reading files.
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;             // For customer purchase history.
 import java.util.Iterator;              // For iterating through Stack<TV>.
 import java.util.NoSuchElementException;
@@ -14,12 +17,11 @@ import java.util.Stack;                 // For the store inventory.
 
 /**
  * @author Sam Young
- * @duedate 2024-09-30
+ * @duedate 2025-03-18
  * @description TV store Inventory management, now with customer Queues.
- * @version 1.1
- * @since 2024-09-18
+ * @version 1.2
+ * @since 2025-03-31
  */
-@SuppressWarnings("nls")
 public class Driver implements Constants {
 
     /**
@@ -29,8 +31,7 @@ public class Driver implements Constants {
      *   * An ArrayDeque, for the Customer queue.
      *   * Another ArrayDeque, for customer data.
      */
-    @SuppressWarnings("resource")
-	private static Scanner              stdin     = new Scanner(System.in);
+    private static Scanner              stdin     = new Scanner(System.in);
     private static Stack<TV>            inventory = new Stack<>();
     private static ArrayDeque<Customer> customers = new ArrayDeque<>();
     private static CustomerData         cd        = new CustomerData();
@@ -66,10 +67,10 @@ public class Driver implements Constants {
     /**
      * @description Display program header & copyright.
      */
-    @SuppressWarnings("nls")
-	private static void displayHeader() {
+    	private static void displayHeader() {
+        System.out.println("");
         System.out.println("                       CMSY-265 Lab 3");
-        System.out.println("Copyright ©2024 Howard Community College. All rights reserved; unauthorized duplication prohibited.");
+        System.out.println("Copyright ©2025 Howard Community College. All rights reserved; unauthorized duplication prohibited.");
         System.out.println("        Welcome to the CMSY-265 TV Inventory Control Program (part 3)");
     }
 
@@ -80,10 +81,11 @@ public class Driver implements Constants {
     public static boolean readInventory() {
 
         Scanner filein = null;
-    
+
         try {
             filein = new Scanner(new BufferedReader(new FileReader(stackFIle)));
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
             return false;
         }
 
@@ -102,14 +104,14 @@ public class Driver implements Constants {
      * @description Read inventory data from stackFIle.
      * @return Whether or not we were able to read the data.
      */
-    @SuppressWarnings("nls")
-	public static boolean readCustFile() {
+    	public static boolean readCustFile() {
 
         Scanner filein = null;
-    
+
         try {
             filein = new Scanner(new BufferedReader(new FileReader(custFile)));
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
             return false;
         }
 
@@ -133,44 +135,41 @@ public class Driver implements Constants {
     /**
      * @description Display menu options.
      */
-    @SuppressWarnings("nls")
-	private static void displayMainMenu() {
+    	private static void displayMainMenu() {
         System.out.println("");
         System.out.println("");
         System.out.println("TV Inventory Management Menu:");
-        System.out.println("  " + (MainMenuOption.STOCK_SHELVES.getValue()+1)     + ". Stock Shelves");
-        System.out.println("  " + (MainMenuOption.FILL_WEB_ORDER.getValue()+1)    + ". Fill Web Order");
-        System.out.println("  " + (MainMenuOption.RESTOCK_RETURN.getValue()+1)    + ". Restock Returned TV");
-        System.out.println("  " + (MainMenuOption.RESTOCK_INVENTORY.getValue()+1) + ". Restock Inventory");
-        System.out.println("  " + (MainMenuOption.CUSTOMER_UPDATE.getValue()+1)   + ". Update Customer (submenu)");
-        System.out.println("  " + (MainMenuOption.CUSTOMER_PURCHASE.getValue()+1) + ". Customer Purchase");
-        System.out.println("  " + (MainMenuOption.CUSTOMER_CHECKOUT.getValue()+1) + ". Customer Checkout");
-        System.out.println("  " + (MainMenuOption.DISPLAY_INVENTORY.getValue()+1) + ". Display Inventory");
-        System.out.println("  " + (MainMenuOption.END_PROGRAM.getValue()+1)       + ". End Program");
+        System.out.println("  " + (MainMenuOption.STOCK_SHELVES.getValue())     + ". Stock Shelves");
+        System.out.println("  " + (MainMenuOption.FILL_WEB_ORDER.getValue())    + ". Fill Web Order");
+        System.out.println("  " + (MainMenuOption.RESTOCK_RETURN.getValue())    + ". Restock Returned TV");
+        System.out.println("  " + (MainMenuOption.RESTOCK_INVENTORY.getValue()) + ". Restock Inventory");
+        System.out.println("  " + (MainMenuOption.CUSTOMER_UPDATE.getValue())   + ". Update Customer (submenu)");
+        System.out.println("  " + (MainMenuOption.CUSTOMER_PURCHASE.getValue()) + ". Customer Purchase");
+        System.out.println("  " + (MainMenuOption.CUSTOMER_CHECKOUT.getValue()) + ". Customer Checkout");
+        System.out.println("  " + (MainMenuOption.DISPLAY_INVENTORY.getValue()) + ". Display Inventory");
+        System.out.println("  " + (MainMenuOption.END_PROGRAM.getValue())       + ". End Program");
     }
 
     /**
      * @description Display menu options.
      */
-    @SuppressWarnings("nls")
-	private static void displayCustomerUpdateMenu() {
+    	private static void displayCustomerUpdateMenu() {
         System.out.println("");
         System.out.println("");
         System.out.println("Customer Update Menu:");
-        System.out.println("  " + (CustomerUpdateSubmenuOption.ADD_CUSTOMER.getValue()+1)          + ". Add Customer");
-        System.out.println("  " + (CustomerUpdateSubmenuOption.DELETE_CUSTOMER.getValue()+1)       + ". Delete Customer");
-        System.out.println("  " + (CustomerUpdateSubmenuOption.CHANGE_CUSTOMER_NAME.getValue()+1)  + ". Change Customer Name");
-        System.out.println("  " + (CustomerUpdateSubmenuOption.SAVE_CHANGES.getValue()+1)          + ". Save Changes to Customer File");
-        System.out.println("  " + (CustomerUpdateSubmenuOption.DISPLAY_CUSTOMER_LIST.getValue()+1) + ". Display Customer List");
-        System.out.println("  " + (CustomerUpdateSubmenuOption.RETURN_TO_MAIN_MENU.getValue()+1)   + ". Return to Main Menu");
+        System.out.println("  " + (CustomerUpdateSubmenuOption.ADD_CUSTOMER.getValue())          + ". Add Customer");
+        System.out.println("  " + (CustomerUpdateSubmenuOption.DELETE_CUSTOMER.getValue())       + ". Delete Customer");
+        System.out.println("  " + (CustomerUpdateSubmenuOption.CHANGE_CUSTOMER_NAME.getValue())  + ". Change Customer Name");
+        System.out.println("  " + (CustomerUpdateSubmenuOption.SAVE_CHANGES.getValue())          + ". Save Changes to Customer File");
+        System.out.println("  " + (CustomerUpdateSubmenuOption.DISPLAY_CUSTOMER_LIST.getValue()) + ". Display Customer List");
+        System.out.println("  " + (CustomerUpdateSubmenuOption.RETURN_TO_MAIN_MENU.getValue())   + ". Return to Main Menu");
     }
 
     /**
      * @description Prompt for valid menu option using stdin.
      * @return valid menu option number
      */
-    @SuppressWarnings("nls")
-	private static MainMenuOption promptForMainMenuOption() {
+    	private static MainMenuOption promptForMainMenuOption() {
 
         int option = 0;
 
@@ -209,8 +208,7 @@ public class Driver implements Constants {
      * @param max Highest allowable menu option.
      * @return Is it valid?
      */
-    @SuppressWarnings("nls")
-	public static boolean isValidMainMenuOption(int option) {
+    	public static boolean isValidMainMenuOption(int option) {
 
         if (option < MainMenuOption.STOCK_SHELVES.getValue() || option > MainMenuOption.END_PROGRAM.getValue()) {
 
@@ -252,13 +250,12 @@ public class Driver implements Constants {
     }
 
     /**
-     * @param returnToMainMenu 
-     * @param addCustomer 
+     * @param returnToMainMenu
+     * @param addCustomer
      * @description Prompt for valid menu option using stdin.
      * @return valid menu option number
      */
-    @SuppressWarnings("nls")
-	private static CustomerUpdateSubmenuOption promptForCustomerUpdateSubmenuOption() {
+    	private static CustomerUpdateSubmenuOption promptForCustomerUpdateSubmenuOption() {
 
         int option = 0;
 
@@ -297,8 +294,7 @@ public class Driver implements Constants {
      * @param max Highest allowable menu option.
      * @return Is it valid?
      */
-    @SuppressWarnings("nls")
-	public static boolean isValidCustomerUpdateSumbenuOption(int option) {
+    	public static boolean isValidCustomerUpdateSumbenuOption(int option) {
 
         if (option == CustomerUpdateSubmenuOption.DELETE_CUSTOMER.getValue() && cd.size() <= 0) {
 
@@ -310,19 +306,9 @@ public class Driver implements Constants {
             System.out.println("[E] No customers in the list, so we can't change anyone's name. Add a customer and try again.");
             return false;
 
-        } else if (option == CustomerUpdateSubmenuOption.SAVE_CHANGES.getValue() && customers.size() <= 0) {
+        } else if (option == CustomerUpdateSubmenuOption.DISPLAY_CUSTOMER_LIST.getValue() && cd.size() <= 0) {
 
-            System.out.println("[W] No customers to checkout right now.");
-            return false;
-
-        } else if (option == CustomerUpdateSubmenuOption.DISPLAY_CUSTOMER_LIST.getValue() && inventory.size() <= 0) {
-
-            System.out.println("[I] No TVs currently in inventory.");
-            return false;
-
-        } else if (option == CustomerUpdateSubmenuOption.RETURN_TO_MAIN_MENU.getValue() && customers.size() > 0) {
-
-            System.out.println("[E] There are still " + customers.size() + " customers in the checkout queue. Finish checking them out, and then we can stop.");
+            System.out.println("[I] No Customers in the CustomerData list to display.");
             return false;
 
         } else return true;
@@ -340,7 +326,7 @@ public class Driver implements Constants {
             case MainMenuOption.STOCK_SHELVES:
                 stockShelves();
                 break;
-    
+
             case MainMenuOption.FILL_WEB_ORDER:
                 fillWebOrder();
                 break;
@@ -378,67 +364,56 @@ public class Driver implements Constants {
     }
 
     /**
-     * @description Event loop for the customer update submenu.
+     * @description Event loop & cases for the customer update submenu.
      */
     private static void customerUpdateSubmenu() {
-        
+
         while (true) {
 
             displayCustomerUpdateMenu();
 
-            CustomerUpdateSubmenuOption choice = promptForCustomerUpdateSubmenuOption();
+            switch (promptForCustomerUpdateSubmenuOption()) {
 
-            if (choice == CustomerUpdateSubmenuOption.RETURN_TO_MAIN_MENU) {
-            	break;
-        	} else {
-        		processSubmenuOption(choice);
-        	}
+                case CustomerUpdateSubmenuOption.ADD_CUSTOMER:
+                    addCustomer();
+                    break;
 
-        }
+                case CustomerUpdateSubmenuOption.DELETE_CUSTOMER:
+                    deleteCustomer();
+                    break;
 
-    }
+                case CustomerUpdateSubmenuOption.CHANGE_CUSTOMER_NAME:
+                    changeCustomerName();
+                    break;
 
-    /**
-     * @description Do the thing the user picked.
-     * @param option Menu option, validated from user input.
-     */
-    private static void processSubmenuOption(CustomerUpdateSubmenuOption option) {
+                case CustomerUpdateSubmenuOption.SAVE_CHANGES:
+                    saveCustomerDataToFile();
+                    break;
 
-        switch (option) {
+                case CustomerUpdateSubmenuOption.DISPLAY_CUSTOMER_LIST:
+                    displayCustomerList();
+                    break;
 
-            case CustomerUpdateSubmenuOption.ADD_CUSTOMER:
-                addCustomer();
-                break;
-    
-            case CustomerUpdateSubmenuOption.DELETE_CUSTOMER:
-                deleteCustomer();
-                break;
+                case CustomerUpdateSubmenuOption.RETURN_TO_MAIN_MENU:
+                    if (!newCustListSavedToFile) {
 
-            case CustomerUpdateSubmenuOption.CHANGE_CUSTOMER_NAME:
-                changeCustomerName();
-                break;
+                        String choice = promptForYN("[W] Changes not saved to file. Save now? [Y/N]: ");
 
-            case CustomerUpdateSubmenuOption.SAVE_CHANGES:
-                saveChangesToFile();
-                break;
+                        if (choice.equalsIgnoreCase("y")) saveCustomerDataToFile();
 
-            case CustomerUpdateSubmenuOption.DISPLAY_CUSTOMER_LIST:
-                displayCustomerList();
-                break;
+                    }
+                    return;
 
-            case CustomerUpdateSubmenuOption.RETURN_TO_MAIN_MENU:
-                break;
+            }
 
         }
 
     }
-    
 
     /**
      * @description Main menu option 1: Stock shelves (i.e.: remove five TVs from inventory).
      */
-    @SuppressWarnings("nls")
-	private static void stockShelves() {
+    	private static void stockShelves() {
 
         System.out.println("");
         System.out.println("Stocked the following TVs onto the shelves:");
@@ -455,8 +430,7 @@ public class Driver implements Constants {
     /**
      * @description Main menu option 2: Fill web order (i.e.: remove one TV from inventory).
      */
-    @SuppressWarnings("nls")
-	private static void fillWebOrder() {
+    	private static void fillWebOrder() {
 
         TV tv = inventory.pop();
 
@@ -469,8 +443,7 @@ public class Driver implements Constants {
     /**
      * @description Main menu option 3: Restock one TV into inventory.
      */
-    @SuppressWarnings("nls")
-	private static void restockReturn() {
+    	private static void restockReturn() {
 
         if (!(inventory.size() <= 0)) {
             inventory.push(new TV(TV.nextId(inventory.peek().get())));
@@ -486,8 +459,7 @@ public class Driver implements Constants {
     /**
      * @description Main menu option 4: Restock five TVs into inventory.
      */
-    @SuppressWarnings("nls")
-	private static void restockInventory() {
+    	private static void restockInventory() {
 
         System.out.println("");
         System.out.println("Added the following TVs as restocks:");
@@ -509,7 +481,7 @@ public class Driver implements Constants {
         }
 
     }
-    
+
     /**
      * @description Customer update submenu option 1: add a new Customer to our CustomerData.
      */
@@ -517,20 +489,23 @@ public class Driver implements Constants {
 
     	// Assignment sheet requires this.
     	System.out.println("");
-    	System.out.println("Add a customer to the CustomerData list");
+    	System.out.println("Add a customer to the CustomerData list.");
     	System.out.println("");
 
     	// Prompt for valid Customer data (acctNum must be unique).
     	Customer c = new Customer(
-    						 promptForString("New Customer's name: "), 
+    						 promptForString("New Customer's name: "),
     						 promptForAcctNum("New Customer's account number: ")
 						 );
 
     	// Add it to CustomerData.
     	cd.addCustomer(c);
 
+        // We changed cd, so make a note of that.
+        newCustListSavedToFile = false;
+
     }
-    
+
     /**
      * @description Customer update submenu option 2: remove a customer from CustomerData.
      */
@@ -543,38 +518,42 @@ public class Driver implements Constants {
     	System.out.println("");
     	System.out.println("Remove a customer from the CustomerData list");
     	System.out.println("");
-    	
+
     	// Prompt for Customer data.
     	String acctNumToRemove = promptForString("Account number of Customer to remove: ");
-    	
+
     	// Check if the acctNum is actually in CustomerData.
     	for (Customer c : cd) {
-    		
+
     		// Is this the right Customer to remove?
     		if (c.getAcctNum().equals(acctNumToRemove)) {
-    			
+
     			// Yep, we found it. Get rid of it & stop searching.
     			cd.removeCustomer(c);
     			customerFound = true;
         		System.out.println("Customer removed.");
+
+                // We changed cd, so make a note of that.
+                newCustListSavedToFile = false;
+
     			break;
-    			
+
     		}
 
     	}
-    	
+
     	/* The assignment wants this:
-    	 * 
+    	 *
     	 *	"c.	If this account does not exist, display an error message,
 		 * 		and require the user to reenter an account number;
 		 * 		this must continue until an existing account number is entered."
-		 * 
+		 *
 		 * That's TERRIBLE, because if the user wants to delete a Customer that's
 		 * not actually in CustomerData (maybe because they just deleted it, maybe
 		 * because they mis-remembered something, or maybe they just pressed the
-		 * wrong button), they'd be forced to delete something else just to get out
-		 * of the prompt.
-		 * 
+		 * wrong menu button), they'd be forced to delete something else just to get
+         * out of the prompt.
+		 *
 		 * I'm vetoing this. If the data's not there, we'll back out to the submenu,
 		 * and then the user can decide whether to try again, pick option 5 to see
 		 * the correct acctNum, or do something else.
@@ -584,12 +563,77 @@ public class Driver implements Constants {
     }
 
     /**
+     * Customer update submenu option 3: change a Customer.name in CustomerData.
+     */
+    private static void changeCustomerName() {
+
+        System.out.println("Changing customer name:%n");
+
+        String acctNum = promptForString("Account number of customer name to change (case-sensitive): ");
+
+        Boolean acctNumFound = false;
+
+    	for (Customer c : cd) {
+
+    		if (c.getAcctNum().equals(acctNum)) {
+
+                acctNumFound = true;
+    			c.setName(promptForString("[I] Account number " + c.getAcctNum() +
+    							   " found. Enter new customer name: "));
+
+                // We changed cd, so make a note of that.
+                newCustListSavedToFile = false;
+
+    			return;
+
+    		}
+
+    	}
+
+    	/*  Again: I'm not going to force users to munge some random record if
+		 *  the Customer they're expecting to see isn't in the list.
+    	 *  See my comment in deleteCustomer() for a more detailed explanation.
+    	 */
+        if (!acctNumFound) System.out.println("[E] Account number not found. Backing out to submenu.");
+
+    }
+
+    /**
+     * @description Customer update submenu option 4: Save CustomerData changes to file.
+     * @param Boolean Whether or not we want to just save to the file in Constants.java.
+     */
+    private static void saveCustomerDataToFile() {
+
+        String fileToWriteTo = promptForString("Path + name of file to write to: ");
+
+        StringBuilder       sb = new StringBuilder();
+        Iterator<Customer>  ci = cd.iterator();
+
+        while (ci.hasNext()) {
+
+            Customer c = ci.next();
+
+            sb.append(c.getAcctNum());
+            sb.append(System.getProperty("line.separator"));    // \cr\lf on Windows, \lf on *nix, \cr on MacOS
+            sb.append(c.getName());
+            if (ci.hasNext()) sb.append(System.getProperty("line.separator"));
+
+        }
+
+        try (BufferedWriter wr = new BufferedWriter(new FileWriter(fileToWriteTo, true))) {
+            wr.write(sb.toString());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    /**
      * @description Main menu option 6: Buy something. (Or several somethings.)
      * @param inventory Stack of TVs currently in inventory.
      * @param customers Deque to add customer to the end of.
      */
-    @SuppressWarnings("nls")
-	private static void customerPurchase(Stack<TV> inventory, ArrayDeque<Customer> customers) {
+    	private static void customerPurchase(Stack<TV> inventory, ArrayDeque<Customer> customers) {
 
     	displayCustomerList();
     	System.out.println("");
@@ -599,19 +643,22 @@ public class Driver implements Constants {
     	 *  See my comment in deleteCustomer() for a more detailed explanation.
     	 */
     	String  acctNum  = promptForString("Customer account number: ");
-        
+
         if (acctNum.equalsIgnoreCase("none")) {
-        	acctNum = promptForAcctNum("[I] \"none\" entered. Please enter acctNum of new customer: ");
+        	acctNum = promptForAcctNum("[I] \"none\" entered. Please enter (unique) acctNum of new customer: ");
         }
-        
+
         String  acctName = "";
-        
+        Boolean customerExists = false;     // Don't just want to use acctName.isEmpty(), since
+                                            // there's the potential for a logic bug if acctName's
+                                            // empty in a real Customer in the list.
+
         // If the name's already in customerData, we need to use that.
     	for (Customer c : cd) {
-    		
-    		// Names can be the same, account numbers can't.
+
     		if (c.getAcctNum().equals(acctNum)) {
 
+                customerExists = true;
     			acctName = c.getName();
     			System.out.println("[I] Account number " + c.getAcctNum() +
     							   " found, customer name: " + acctName + ".");
@@ -620,10 +667,19 @@ public class Driver implements Constants {
     		}
 
     	}
-    	
-        if (acctName.isEmpty()) acctName = promptForString("Customer name: ");
 
-        int     tvsCount = promptForInt("Number of TVs they're buying: ", MIN_TVSTOBUY, inventory.size());
+        if (!customerExists) {
+            // This is a new Customer.
+            acctName = promptForString("Customer name: ");
+            Customer c = new Customer(acctNum, acctName);
+            cd.addCustomer(c);
+
+            // We changed cd, so make a note of that.
+            newCustListSavedToFile = false;
+
+        }
+
+        int tvsCount = promptForInt("Number of TVs they're buying: ", MIN_TVSTOBUY, inventory.size());
 
         ArrayList<TV> tvsToBuy = new ArrayList<TV>();
 
@@ -648,24 +704,22 @@ public class Driver implements Constants {
         System.out.print(String.format(prompt));
         return stdin.nextLine();
     }
-    
+
     /**
      * @description Prompt for a unique acctNum from the user.
      * @param prompt to ask for acctNum
      * @return non-duplicate acctNum
      */
-    @SuppressWarnings("nls")
-	private static String promptForAcctNum(String prompt) {
+    	private static String promptForAcctNum(String prompt) {
 
     	// Variables:
     	String acctNum = "";			// The acctNum, parsed from user input.
     	boolean duplicateFound = false;	// Whether or not acctNum's already in our CustomerData.
-    	
+
     	while (true) {
 
-            System.out.print(String.format(prompt));
-            acctNum = stdin.nextLine();
-            
+            acctNum = promptForString(prompt);
+
             // cd isn't sorted, so linear search it is.
             for (Customer c : cd) {
 
@@ -673,24 +727,42 @@ public class Driver implements Constants {
 
             		System.out.println("[E] This account number isn't unique. Please re-enter.");
                     System.out.println("");
-            		
+
             		duplicateFound = true;
 
         		}
 
             }
-            
+
             if (!duplicateFound) return acctNum;
 
     	}
 
     }
-    
+
+    /**
+     * @description Prompt for Y/N (single character, case-insensitive).
+     * @param
+     */
+    private static String promptForYN(String prompt) {
+
+        while (true) {
+
+            String yn = promptForString(prompt);
+
+            if (!(yn.equalsIgnoreCase("y") || yn.equalsIgnoreCase("n"))) {
+                System.out.println("[E] Please enter \"Y\", \"y\", \"N\", or \"n\".%n%n");
+            } else return yn;
+
+        }
+
+    }
+
     /**
      * @description Display the customers in CustomerData.
      */
     private static void displayCustomerList() {
-    	
+
     	System.out.println();
 
     	// I'd rather encapsulate this sort of thing in a toString() than put it in main().
@@ -703,8 +775,7 @@ public class Driver implements Constants {
      * @param prompt to show user, before asking.
      * @return The vaildated int, taken from user input.
      */
-    @SuppressWarnings("nls")
-	private static int promptForInt(String prompt, int min, int max) {
+    	private static int promptForInt(String prompt, int min, int max) {
 
         // Variables:
         String in = "";   // User input, unparsed.
@@ -745,8 +816,7 @@ public class Driver implements Constants {
      * @param max Maximum allowable int.
      * @return Validated int.
      */
-    @SuppressWarnings("nls")
-	private static boolean validate(int input, int min, int max) {
+    	private static boolean validate(int input, int min, int max) {
 
         if (input < min) {
 
@@ -771,8 +841,7 @@ public class Driver implements Constants {
     /**
      * @description Main menu option 7: Check out the next customer in the queue.
      */
-    @SuppressWarnings("nls")
-	private static void customerCheckout(ArrayDeque<Customer> customers) {
+    	private static void customerCheckout(ArrayDeque<Customer> customers) {
 
         Customer checkout = customers.removeFirst();
 
@@ -818,7 +887,7 @@ public class Driver implements Constants {
         if (!newCustListSavedToFile) {
 
             while (true) {
-                
+
                 String selection = promptForString("You didn't save the new customer(s) to the file.%n(To fix: pick option 5, suboption 4.)%n%nAre you sure you want to exit? [y/n]: ");
 
                 if (selection.equals("Y") || selection.equals("y")) {
@@ -845,7 +914,7 @@ public class Driver implements Constants {
 
             System.out.println("");
             displayInventory(inventory);
-    
+
             System.out.println("");
             System.out.println("");
             System.out.println("Thanks for using the program. Exiting.");

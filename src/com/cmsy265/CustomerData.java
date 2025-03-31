@@ -117,9 +117,9 @@ public class CustomerData implements Serializable, Iterable<Customer> {
 
         int custNum = 1;
         for (Customer c : customerData) {
-            list += "Customer" + String.format("%s$3", custNum);
-            list += ": " + String.format("%s-$22", c.getName());
-            list += "Account Number:" + String.format("%s12", c.getAcctNum());
+            list += "Customer" + String.format("%1$3d", custNum);
+            list += ": " + String.format("%1$20s", c.getName());
+            list += ", Account Number:" + String.format("%1$10s", c.getAcctNum());
             list += String.format("%n");
             custNum++;
         }

@@ -1,51 +1,25 @@
 TODOs for Lab 3 Driver file (everything else is done):
-  ✓ Package issue: Just blew away VSCode entirely; now using Eclipse in Windows for everything.
+  ✓ Package issue: Fixed! (Just had to use separate repos for each lab.)
   ✓ (i think this is done?) Refactor: Use enums for MainMenuOption, CustomerUpdateSubmenuOption
-* Create/write methods for customer update submenu options:
-  * changeCustomerName()
-	* Do a quick println() saying what you're doing
-	* Prompt for a valid account number (if it doesn't exist, show an error & re-prompt until a valid one's entered)
-	  * Ed: No. If it doesn't exist, back out to the submenu. Don't force someone to change the 
-	* Prompt for a new name
-	* Modify Customer.Name in the list (don't just remove the customer & add a new one!)
-  * saveToFile()
-	* Prompt for filename
-	* Create file (if you can't, show an error & return to main)
-	* Write the CustomerData List out to the file in the exact same format as CustFile.txt (again, show an error if you can't write to the file):
-		Customer Name 1\cr\lf
-		Account Number 1\cr\lf
-		Cusomter Name 2\cr\lf
-		Account Number 2\eof
-  * returnToMainMenu()
-	* Test if the file was changed & the user didn't save anything:
-	  * If nothing changed, or if the user saved, just return to main
-	  * If it did & they didn't, prompt the user [Y/N] to ask if they want to save their changes (anything other than "Y", "y", "N", or "n" should show an error & re-prompt)
-* Update customerPurchase() to:
-  * displayCustomerList() first
-  * Prompt for acctNum, and proceed as follows:
-    * Allow prompt for "none" (non-case-sensitive) as the account number
-	* The acctNum is found in CustomerData:
-	  * Use the matching name from the list (don't promot for a name)
-	  * Proceed as previously written:
-	    * Prompt for the number of TVs the customer's buying (validate that that number's allowable!)
-		* Instantiate a new ArrayList<TV> & add the TVs they want to buy to it
-		* Instantiate a new Customer with the required info (acctName, acctNum, tvsToBuy) & add it to the list
-	* The acctNum is NOT found in CustomerData:
-	  * Prompt for Customer.name
-	  * Add the new customer to the CustomerData list
-	  * Proceed as previously written:
-	    * Prompt for the number of TVs the customer's buying (validate that that number's allowable!)
-		* Instantiate a new ArrayList<TV> & add the TVs they want to buy to it
-		* Instantiate a new Customer with the required info (acctName, acctNum, tvsToBuy) & add it to the list
-	* acctNum = "none" (non-case-sensitive):
-	  * Prompt for a UNIQUE Customer.acctNum
-	  * Prompt for Customer.name
-	  * Instantiate a new Customer with this data
-	  * Add the new Customer to the CustomerList
-	  * Proceed as previously written:
-	    * Prompt for the number of TVs the customer's buying (validate that that number's allowable!)
-		* Instantiate a new ArrayList<TV> & add the TVs they want to buy to it
-		* Instantiate a new Customer with the required info (acctName, acctNum, tvsToBuy) & add it to the list
+  ✓ Update customerPurchase() to displayCustomerList() & only prompt for a Customer's name if they're not in customerData (& in that case, add them to customerData)
+ ✓ changeCustomerName()
+  ✓ Do a quick println() saying what you're doing
+  ✓ Prompt for a valid account number (if it doesn't exist, show an error & re-prompt until a valid one's entered)
+    * Ed: No. If it doesn't exist, back out to the submenu. Don't force someone to munge a record just to get out of the prompt.
+  ✓ Prompt for a new name
+  ✓ Modify Customer.Name in the list (don't just remove the customer & add a new one!)
+ ✓ saveToFile()
+  * Prompt for filename
+  * Create file (if you can't, show an error & return to main)
+  * Write the CustomerData List out to the file in the exact same format as CustFile.txt (again, show an error if you can't write to the file):
+	Customer Name 1\cr\lf
+	Account Number 1\cr\lf
+	Cusomter Name 2\cr\lf
+	Account Number 2\eof
+* returnToMainMenu()
+  * Test if the file was changed & the user didn't save anything:
+    * If nothing changed, or if the user saved, just return to main
+    * If it did & they didn't, prompt the user [Y/N] to ask if they want to save their changes (anything other than "Y", "y", "N", or "n" should show an error & re-prompt)
 
 
 ------
