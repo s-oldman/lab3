@@ -43,33 +43,6 @@ public interface Constants {
     }
 
     /**
-     * Main menu options. TODO: Refactor to get rid of these in favor of enums.
-     */
-    /*
-    final int STOCK_SHELVES     = 1;
-    final int FILL_WEB_ORDER    = 2;
-    final int RESTOCK_RETURN    = 3;
-    final int RESTOCK_INVENTORY = 4;
-    final int CUSTOMER_UPDATE   = 5;
-    final int CUSTOMER_PURCHASE = 6;
-    final int CUSTOMER_CHECKOUT = 7;
-    final int DISPLAY_INVENTORY = 8;
-    final int END_PROGRAM       = 9;
-    */
-
-    /**
-     * CustomerData submenu options. TODO: Refactor to get rid of these in favor of enums.
-     */
-    /*
-    final int ADD_CUSTOMER          = 1;
-    final int DELETE_CUSTOMER       = 2;
-    final int CHANGE_CUSTOMER_NAME  = 3;
-    final int SAVE_CHANGES          = 4;
-    final int DISPLAY_CUSTOMER_LIST = 5;
-    final int RETURN_TO_MAIN_MENU   = 6;
-    */
-
-    /**
      * How many TVs to push() or pop() when using menu options
      * 1 or 4, respectively.
      */
@@ -81,7 +54,7 @@ public interface Constants {
      *   * List of TV IDs (plaintext).
      *   * List of customers (plaintext).
      */
-    final String stackFIle  = "txt/stack.txt";
+    final String stackFile  = "txt/stack.txt";
     final String custFile   = "txt/CustFile.txt";
 
     /**

@@ -1,14 +1,14 @@
 package com.cmsy265;
 
 import java.io.BufferedReader;          // For reading files in chunks.
-import java.io.BufferedWriter;
+import java.io.BufferedWriter;          // For writing files in chunks.
 import java.io.FileNotFoundException;   // Required by FileReader.
 import java.io.FileReader;              // For reading files.
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.FileWriter;              // For writing files.
+import java.io.IOException;             // For catching write exceptions.
 import java.util.ArrayList;             // For customer purchase history.
 import java.util.Iterator;              // For iterating through Stack<TV>.
-import java.util.NoSuchElementException;
+import java.util.NoSuchElementException;// In case we can't read a whole Customer from the CustomerData file.
 import java.util.ArrayDeque;            // For the customer queue. (Much better than LinkedList, which requires
                                         //   linear time & invokes garbage collection just to enqueue a customer.
                                         //   And it implements the LinkedList interface, anyways.)
@@ -58,7 +58,7 @@ public class Driver implements Constants {
 
         } else {
 
-            System.out.println("[C] Either \"" + stackFIle + "\" or \"" + custFile + "\" not found in classpath, so we can't initialize the inventory & customer lists. Exiting.");
+            System.out.println("[C] Either \"" + stackFile + "\" or \"" + custFile + "\" not found in classpath, so we can't initialize the inventory & customer lists. Exiting.");
             System.exit(1);
         }
 
@@ -75,17 +75,42 @@ public class Driver implements Constants {
     }
 
     /**
-     * @description Read inventory data from stackFIle.
+     * @description Read inventory data from stackFile.
      * @return Whether or not we were able to read the data.
      */
     public static boolean readInventory() {
 
         Scanner filein = null;
 
+        /** [DEBUG] 2025-04-01 session with Prof. Saha.
+         * 
+        // [DEBUG] pwd
+        //System.out.println("Working Directory = " + System.getProperty("user.dir"));
+
+        // [DEBUG] Get current path info
+        String currentDirPath = System.getProperty("user.dir");
+        File currentDir = new File(currentDirPath);
+        System.out.println("Current directory: " + currentDirPath);
+        System.out.println("Files and directories in current directory:"); // List all files and directories
+        File[] files = currentDir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                System.out.println("Name: " + file.getName());
+                System.out.println("Path: " + file.getAbsolutePath());
+                System.out.println("----------------------------");
+            }
+        } else {
+            System.out.println("Error: Could not list files in directory.");
+        }
+        */
+
         try {
-            filein = new Scanner(new BufferedReader(new FileReader(stackFIle)));
+            filein = new Scanner(new BufferedReader(new FileReader(stackFile)));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            
+            // [DEBUG] Print full stack trace instead of just the error message.
+            //e.printStackTrace();
+            System.out.println("[C] Unable to open file " + stackFile + " for reading.");
             return false;
         }
 
@@ -101,7 +126,7 @@ public class Driver implements Constants {
     }
 
     /**
-     * @description Read inventory data from stackFIle.
+     * @description Read customer data from custFile.
      * @return Whether or not we were able to read the data.
      */
     	public static boolean readCustFile() {
@@ -111,7 +136,7 @@ public class Driver implements Constants {
         try {
             filein = new Scanner(new BufferedReader(new FileReader(custFile)));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("[C] Unable to open file " + custFile + " for reading.");
             return false;
         }
 
@@ -186,7 +211,8 @@ public class Driver implements Constants {
 
             } catch (NumberFormatException e) {
 
-                System.out.println("[E] That's not a menu option. Try again.");
+                // Menu option validation still catches this.
+                //System.out.println("[E] That's not a menu option. Try again.");
                 continue;
 
             }
@@ -296,7 +322,12 @@ public class Driver implements Constants {
      */
     	public static boolean isValidCustomerUpdateSumbenuOption(int option) {
 
-        if (option == CustomerUpdateSubmenuOption.DELETE_CUSTOMER.getValue() && cd.size() <= 0) {
+        if (option < CustomerUpdateSubmenuOption.ADD_CUSTOMER.getValue() || option > CustomerUpdateSubmenuOption.RETURN_TO_MAIN_MENU.getValue()) {
+
+            System.out.println("Invalid menu option. Try again.");
+            return false;
+
+        } else if (option == CustomerUpdateSubmenuOption.DELETE_CUSTOMER.getValue() && cd.size() <= 0) {
 
             System.out.println("[E] No customers in the list, so we can't delete any. Add a customer and try again.");
             return false;
@@ -395,12 +426,11 @@ public class Driver implements Constants {
                     break;
 
                 case CustomerUpdateSubmenuOption.RETURN_TO_MAIN_MENU:
+                    // Requirements list doesn't have us show this when leaving, but the screenshots do.
+                    displayCustomerList();
                     if (!newCustListSavedToFile) {
-
-                        String choice = promptForYN("[W] Changes not saved to file. Save now? [Y/N]: ");
-
-                        if (choice.equalsIgnoreCase("y")) saveCustomerDataToFile();
-
+                        String choice = promptForYN("[W] Changes not saved to file. Still want to leave? [Y/N]: ");
+                        if (choice.equalsIgnoreCase("n")) break;
                     }
                     return;
 
@@ -567,7 +597,7 @@ public class Driver implements Constants {
      */
     private static void changeCustomerName() {
 
-        System.out.println("Changing customer name:%n");
+        System.out.println("Changing customer name.");
 
         String acctNum = promptForString("Account number of customer name to change (case-sensitive): ");
 
@@ -578,8 +608,12 @@ public class Driver implements Constants {
     		if (c.getAcctNum().equals(acctNum)) {
 
                 acctNumFound = true;
-    			c.setName(promptForString("[I] Account number " + c.getAcctNum() +
+
+                String oldName = c.getName();
+    			c.setName(promptForString("Account number " + c.getAcctNum() +
     							   " found. Enter new customer name: "));
+
+                System.out.println("Customer " + c.getAcctNum() + " name changed from \"" + oldName + "\" to \"" + c.getName() + "\".");
 
                 // We changed cd, so make a note of that.
                 newCustListSavedToFile = false;
@@ -620,11 +654,14 @@ public class Driver implements Constants {
 
         }
 
-        try (BufferedWriter wr = new BufferedWriter(new FileWriter(fileToWriteTo, true))) {
+        try (BufferedWriter wr = new BufferedWriter(new FileWriter(fileToWriteTo, false))) {
             wr.write(sb.toString());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+
+        // We saved the changes to CustomerData, so make a note of that.
+        newCustListSavedToFile = true;
 
     }
 
@@ -642,18 +679,13 @@ public class Driver implements Constants {
 		 *  the Customer they're expecting to see isn't there.
     	 *  See my comment in deleteCustomer() for a more detailed explanation.
     	 */
-    	String  acctNum  = promptForString("Customer account number: ");
-
-        if (acctNum.equalsIgnoreCase("none")) {
-        	acctNum = promptForAcctNum("[I] \"none\" entered. Please enter (unique) acctNum of new customer: ");
-        }
-
+    	String  acctNum  = promptForString("Customer account number (\"none\" if new customer): ");
         String  acctName = "";
         Boolean customerExists = false;     // Don't just want to use acctName.isEmpty(), since
                                             // there's the potential for a logic bug if acctName's
                                             // empty in a real Customer in the list.
 
-        // If the name's already in customerData, we need to use that.
+        // If the name's already in customerData, we need to use that. (Yes, even if the name is "none".)
     	for (Customer c : cd) {
 
     		if (c.getAcctNum().equals(acctNum)) {
@@ -662,17 +694,24 @@ public class Driver implements Constants {
     			acctName = c.getName();
     			System.out.println("[I] Account number " + c.getAcctNum() +
     							   " found, customer name: " + acctName + ".");
-    			return;
+    			break;
 
     		}
 
     	}
 
         if (!customerExists) {
-            // This is a new Customer.
-            acctName = promptForString("Customer name: ");
-            Customer c = new Customer(acctNum, acctName);
+            // This is a new Customer, put their info into CustomerData.
+            if (acctNum.equalsIgnoreCase("none")) {
+                acctName = promptForString("\"none\" entered. Please enter new customer's name: ");
+                acctNum = promptForAcctNum("New customer's acctNum (must be unique): ");
+            } else {
+                acctName = promptForString("New customer name: ");
+            }
+            Customer c = new Customer(acctName, acctNum);
             cd.addCustomer(c);
+            System.out.println("[I] Added customer (account: \"" + c.getAcctNum() +
+                               "\", name: \"" + c.getName() + "\") to customer data list.");
 
             // We changed cd, so make a note of that.
             newCustListSavedToFile = false;
@@ -691,6 +730,8 @@ public class Driver implements Constants {
 
         System.out.println("There are " + inventory.size() + " more TVs left in inventory.");
 
+        // This is why I wanted to use ArrayDeque instead of LinkedList:
+        // in LinkedList this'd be linear time, but here it's constant time.
         customers.addLast(c);
 
     }
@@ -713,12 +754,14 @@ public class Driver implements Constants {
     	private static String promptForAcctNum(String prompt) {
 
     	// Variables:
-    	String acctNum = "";			// The acctNum, parsed from user input.
-    	boolean duplicateFound = false;	// Whether or not acctNum's already in our CustomerData.
+    	String acctNum = "";		// The acctNum, parsed from user input.
+    	Boolean duplicateFound;     // Whether or not acctNum's already in our CustomerData.
 
-    	while (true) {
+    	do {
 
             acctNum = promptForString(prompt);
+
+            duplicateFound = false;     //We don't know that this is a duplicate yet.
 
             // cd isn't sorted, so linear search it is.
             for (Customer c : cd) {
@@ -734,9 +777,9 @@ public class Driver implements Constants {
 
             }
 
-            if (!duplicateFound) return acctNum;
+    	} while (duplicateFound);
 
-    	}
+        return acctNum;
 
     }
 
@@ -751,7 +794,7 @@ public class Driver implements Constants {
             String yn = promptForString(prompt);
 
             if (!(yn.equalsIgnoreCase("y") || yn.equalsIgnoreCase("n"))) {
-                System.out.println("[E] Please enter \"Y\", \"y\", \"N\", or \"n\".%n%n");
+                System.out.println("[E] Please enter \"Y\", \"y\", \"N\", or \"n\".");
             } else return yn;
 
         }
@@ -884,43 +927,23 @@ public class Driver implements Constants {
      */
     private static void endProgram() {
 
+        // I don't really like using a global Boolean like this, but it's easier than actually reading the file & comparing line-by-line.
         if (!newCustListSavedToFile) {
 
-            while (true) {
+            String selection = promptForYN("You didn't save the new customer(s) to the file.%n(To fix: pick option 5, suboption 4.)%n%nAre you sure you want to exit? [Y/N]: ");
 
-                String selection = promptForString("You didn't save the new customer(s) to the file.%n(To fix: pick option 5, suboption 4.)%n%nAre you sure you want to exit? [y/n]: ");
-
-                if (selection.equals("Y") || selection.equals("y")) {
-
-                    displayInventory(inventory);
-
-                    System.out.println("");
-                    System.out.println("");
-                    System.out.println("Thanks for using the program. Exiting.");
-                    System.exit(0);
-
-                } else if (selection.equals("N") || selection.equals("n")) {
-
-                    break;
-
-                }
-
-            }
-
-        } else {
-
-            System.out.println("");
-        	displayCustomerList();
-
-            System.out.println("");
-            displayInventory(inventory);
-
-            System.out.println("");
-            System.out.println("");
-            System.out.println("Thanks for using the program. Exiting.");
-            System.exit(0);
+            if (selection.equalsIgnoreCase("N")) return;
 
         }
+
+        displayCustomerList();
+
+        displayInventory(inventory);
+
+        System.out.println("");
+        System.out.println("");
+        System.out.println("Thanks for using the program. Exiting.");
+        System.exit(0);
 
     }
 

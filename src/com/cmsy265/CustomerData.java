@@ -15,11 +15,6 @@ import java.util.ArrayDeque;    // For the customer queue. (Much better than Lin
 
 public class CustomerData implements Serializable, Iterable<Customer> {
 
-    /**
-	 * @description Because Eclipse complained when I implemented Serializable without it.
-	 */
-	private static final long serialVersionUID = -1142552807521369096L;
-
 	/**
      * @description Just one private variable: the ArrayDeque<Customer>.
      */
